@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "client": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "required": [
+        "identifier"
+      ],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "enum": [
+            "sync",
+            "full_upload",
+            "fast_upload",
+            "clean",
+            "refresh_images"
+          ]
+        },
+        "options": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "required": [
+    "client",
+    "operation"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "httpMethod": "POST",
+  "body": {
+    "client": {
+      "identifier": "irure ut ad",
+      "name": "elit"
+    },
+    "operation": {
+      "identifier": "full_upload",
+      "options": {}
+    }
+  }
+}

@@ -1,4 +1,11 @@
 {
+  "name": "rets-execution-manager",
+  "version": "0.1.0",
   "dependencies": {
+    "jsonschema": "^1.1.0",
+    "node-uuid": "^1.4.7"
+  },
+  "devDependencies": {
+    "dynamodb-doc": "^1.0.0"
   }
 }

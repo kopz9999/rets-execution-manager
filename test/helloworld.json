@@ -1,5 +1,15 @@
 {
-  "key3": "value3",
-  "key2": "value2",
-  "key1": "value1"
+  "httpMethod": "POST",
+  "body": {
+    "TableName": "MyTable",
+    "Item": {
+      "id": 1,
+      "year": "321321",
+      "title": "312312",
+      "info": {
+        "plot": "Nothing happens at all.",
+        "rating": "0"
+      }
+    }
+  }
 }
