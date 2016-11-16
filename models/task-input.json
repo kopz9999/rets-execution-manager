@@ -1,17 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "client": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
     "operation": {
       "type": "object",
       "required": [
@@ -32,10 +21,13 @@
           "type": "object"
         }
       }
+    },
+    "client_id": {
+      "type": "string"
     }
   },
   "required": [
-    "client",
-    "operation"
+    "operation",
+    "client_id"
   ]
 }

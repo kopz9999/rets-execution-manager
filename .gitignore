@@ -12,4 +12,4 @@ node_modules/
 # Bower
 bower_components/
 # Other
-npm-debug.log
+npm-debug.log*
