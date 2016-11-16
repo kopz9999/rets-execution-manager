@@ -11,21 +11,20 @@ const Validator = require('jsonschema').Validator;
 const algoliasearch = require('algoliasearch');
 
 // Objects
-const uuid = require('node-uuid');
 const config = {
   indexName: `tasks_${env}`,
   applicationID: process.env.ALGOLIA_APP_ID,
   apiKey: process.env.ALGOLIA_API_KEY
 };
 const validator = new Validator();
-const HttpStatus = require('http-status-codes');
-const tasksSchema = require('./models/task-input.json');
 const client = algoliasearch(config.applicationID, config.apiKey);
 const tasksIndex = client.initIndex(config.indexName);
 
+// Services
+const tasksService = require('./app/tasks');
+
 exports.handler = (event, context, callback) => {
   //console.log('Received event:', JSON.stringify(event, null, 2));
-  let subject = null;
 
   const done = (err, res, status) => {
     return callback(null, {
@@ -47,26 +46,6 @@ exports.handler = (event, context, callback) => {
   var pathParameters = event.pathParameters || {};
   var query = event.queryStringParameters || {};
 
-  switch (event.httpMethod) {
-    case 'GET': // TODO: Logic here
-      if (pathParameters.id) {
-        tasksIndex.getObject(pathParameters.id, done);
-      } else {
-        tasksIndex.search(query.search,
-          { hitsPerPage: query.per_page, page: query.page }, done);
-      }
-      break;
-    case 'POST':
-      subject = JSON.parse(event.body);
-      var result = validator.validate(subject, tasksSchema);
-      if (result.errors.length > 0) {
-        done(null, result.errors, HttpStatus.UNPROCESSABLE_ENTITY);
-      } else {
-        subject.id = subject.objectID = uuid.v4();
-        tasksIndex.saveObject(subject, renderObject(HttpStatus.CREATED, subject));
-      }
-      break;
-    default:
-      done(new Error(`Unsupported method "${event.httpMethod}"`));
-  }
+  tasksService(event, pathParameters, query, done, renderObject, validator,
+    tasksIndex);
 };

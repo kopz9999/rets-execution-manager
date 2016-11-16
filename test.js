@@ -5,11 +5,18 @@ AWS.config.credentials = credentials;
 
 var handler = require('./').handler;
 var ctx = require('./test/ctx');
-// var event = require('./test/requests/create.json');
-// var event = require('./test/requests/list.json');
-var event = require('./test/requests/show.json');
+var createEvent = require('./test/requests/create.json');
+var listEvent = require('./test/requests/list.json');
+var showEvent = require('./test/requests/show.json');
 
-handler(event, ctx, function (a, b) {
+handler(createEvent, ctx, function (a, b) {
   console.log(b);
 });
 
+handler(listEvent, ctx, function (a, b) {
+  console.log(b);
+});
+
+handler(showEvent, ctx, function (a, b) {
+  console.log(b);
+});
