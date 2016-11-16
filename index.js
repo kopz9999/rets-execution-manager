@@ -1,31 +1,28 @@
 'use strict';
 
 console.log('Loading function');
+// Env
+var dotenv = require('dotenv');
+var env = process.env.NODE_ENV || 'production';
+dotenv.config({path: `./${env}.env`});
 
 // Classes
-const doc = require('dynamodb-doc');
 const Validator = require('jsonschema').Validator;
+const algoliasearch = require('algoliasearch');
 
 // Objects
 const uuid = require('node-uuid');
-const dynamo = new doc.DynamoDB();
 const config = {
-  tableName: 'RetsTasks'
+  indexName: `tasks_${env}`,
+  applicationID: process.env.ALGOLIA_APP_ID,
+  apiKey: process.env.ALGOLIA_API_KEY
 };
 const validator = new Validator();
 const HttpStatus = require('http-status-codes');
-const schema = require('./models/task-input.json');
+const tasksSchema = require('./models/task-input.json');
+const client = algoliasearch(config.applicationID, config.apiKey);
+const tasksIndex = client.initIndex(config.indexName);
 
-/**
- * Demonstrates a simple HTTP endpoint using API Gateway. You have full
- * access to the request and response payload, including headers and
- * status code.
- *
- * To scan a DynamoDB table, make a GET request with the TableName as a
- * query string parameter. To put, update, or delete an item, make a POST,
- * PUT, or DELETE request respectively, passing in the payload to the
- * DynamoDB API as a JSON body.
- */
 exports.handler = (event, context, callback) => {
   //console.log('Received event:', JSON.stringify(event, null, 2));
   let subject = null;
@@ -47,23 +44,26 @@ exports.handler = (event, context, callback) => {
     };
   };
 
-  var dynamoParams = { TableName: config.tableName };
+  var pathParameters = event.pathParameters || {};
+  var query = event.queryStringParameters || {};
 
   switch (event.httpMethod) {
     case 'GET': // TODO: Logic here
-
-      dynamo.scan(dynamoParams, done);
+      if (pathParameters.id) {
+        tasksIndex.getObject(pathParameters.id, done);
+      } else {
+        tasksIndex.search(query.search,
+          { hitsPerPage: query.per_page, page: query.page }, done);
+      }
       break;
     case 'POST':
-      // debugger;
       subject = JSON.parse(event.body);
-      var result = validator.validate(subject, schema);
+      var result = validator.validate(subject, tasksSchema);
       if (result.errors.length > 0) {
-        done(null, result.errors, '422');
+        done(null, result.errors, HttpStatus.UNPROCESSABLE_ENTITY);
       } else {
-        subject.id = uuid.v4();
-        dynamo.putItem(Object.assign({Item: subject}, dynamoParams),
-          renderObject(HttpStatus.ACCEPTED, subject));
+        subject.id = subject.objectID = uuid.v4();
+        tasksIndex.saveObject(subject, renderObject(HttpStatus.CREATED, subject));
       }
       break;
     default:

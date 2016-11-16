@@ -1,6 +1,6 @@
 {
   "resource": "/tasks/{id}",
-  "path": "/tasks/421232",
+  "path": "/tasks/587cc803-efbe-42d4-993f-cc2608c7c05f",
   "httpMethod": "GET",
   "headers": {
     "Accept": "*/*",
@@ -25,7 +25,7 @@
   },
   "queryStringParameters": null,
   "pathParameters": {
-    "id": "421232"
+    "id": "587cc803-efbe-42d4-993f-cc2608c7c05f"
   },
   "stageVariables": null,
   "requestContext": {

@@ -13,3 +13,5 @@ node_modules/
 bower_components/
 # Other
 npm-debug.log*
+# Env
+*.env
