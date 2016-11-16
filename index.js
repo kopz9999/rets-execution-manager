@@ -12,16 +12,19 @@ const algoliasearch = require('algoliasearch');
 
 // Objects
 const config = {
-  indexName: `tasks_${env}`,
+  tasksIndexName: `tasks_${env}`,
+  clientsIndexName: `clients_${env}`,
   applicationID: process.env.ALGOLIA_APP_ID,
   apiKey: process.env.ALGOLIA_API_KEY
 };
 const validator = new Validator();
 const client = algoliasearch(config.applicationID, config.apiKey);
-const tasksIndex = client.initIndex(config.indexName);
+const tasksIndex = client.initIndex(config.tasksIndexName);
+const clientsIndex = client.initIndex(config.clientsIndexName);
 
 // Services
 const tasksService = require('./app/tasks');
+const clientsService = require('./app/clients');
 
 exports.handler = (event, context, callback) => {
   //console.log('Received event:', JSON.stringify(event, null, 2));
@@ -45,7 +48,18 @@ exports.handler = (event, context, callback) => {
 
   var pathParameters = event.pathParameters || {};
   var query = event.queryStringParameters || {};
+  var baseResource = event.resource.split('/')[1];
 
-  tasksService(event, pathParameters, query, done, renderObject, validator,
-    tasksIndex);
+  console.log('Calling', baseResource);
+
+  switch (baseResource) {
+    case 'tasks':
+      tasksService(event, pathParameters, query, done, renderObject, validator,
+        tasksIndex);
+      break;
+    case 'clients':
+      clientsService(event, pathParameters, query, done, renderObject, validator,
+        clientsIndex);
+      break;
+  }
 };
